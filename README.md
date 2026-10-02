@@ -19,6 +19,26 @@ identical.
 (Maintained by this repo's own
 [workflow](.github/workflows/update-readme-live-link.yml).)
 
+## Quick Run
+
+From inside this repo, sync another repo's README in one command:
+
+```bash
+README_FILE=/path/to/other-repo/README.md \
+  REPOSITORY=owner/other-repo \
+  ./scripts/update-live-link.sh
+```
+
+Example, updating a sibling checkout of `documind`:
+
+```bash
+README_FILE=../documind/README.md REPOSITORY=DevArtsLab/documind ./scripts/update-live-link.sh
+```
+
+`README_FILE` points at the other repo's README; `REPOSITORY` is the
+`owner/name` to read the About URL from. Uses `gh` when installed, so a
+logged-in `gh` needs no token setup.
+
 ## Setup
 
 1. Put markers in your README:
