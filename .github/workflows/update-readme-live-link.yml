@@ -1,12 +1,13 @@
 name: Update README Live Link
 
 on:
-  # GitHub has no workflow trigger for edits to the repository About
-  # section, so this runs on push and on manual dispatch. After changing
-  # the About URL, press "Run workflow" to re-sync the README.
-  push:
-    branches: [master, main]
+  # Manual dispatch only: run it on demand, from any branch, whenever the
+  # About section URL changes.
   workflow_dispatch:
+  # Optional: lets an external service trigger this workflow via the
+  # dispatches API, e.g. a relay that watches `repository` webhook events
+  # and calls POST /repos/{owner}/{repo}/dispatches. See README.
+  repository_dispatch:
 
 permissions:
   contents: write

@@ -1,22 +1,14 @@
-# tool-readme-links
+# README Live Link
 
-Keep your README's "Live Demo" link in sync with your repository's **About**
-section automatically.
+**One URL in About. Zero drift in your README.**
 
-GitHub Markdown has no variable substitution, so a live link must be written
-into the file. This tool does that for you: a small script reads the
-repository's `homepage` field (the website URL in the About section) via the
-GitHub API and rewrites a marked block in your README. If no homepage is set,
-the same link markup is written with a placeholder URL, so the rendered README
-looks identical either way.
+Syncs your README's live link with your repository's **About** URL, on
+demand. Ships as a composite GitHub Action (`action.yml`) and a standalone
+bash script (`scripts/update-live-link.sh`). No About URL set? The same
+link markup is written with a placeholder URL, so the README looks
+identical.
 
-It ships as:
-
-- a **composite GitHub Action** (`action.yml`) you can `uses:` in any repo, and
-- a **standalone bash script** (`scripts/update-live-link.sh`) you can run
-  locally or from any CI.
-
-## Live Demo
+## Live Site
 
 <!-- live-link:start -->
 
@@ -24,57 +16,46 @@ It ships as:
 
 <!-- live-link:end -->
 
-(The block above is maintained by this repository's own
-[workflow](.github/workflows/update-readme-live-link.yml) as a live example.)
+(Maintained by this repo's own
+[workflow](.github/workflows/update-readme-live-link.yml).)
 
-## Setup in your repository
+## Setup
 
-### 1. Add markers to your README
+1. Put markers in your README:
 
-```markdown
-## Live Demo
+   ```markdown
+   <!-- live-link:start -->
+   <!-- live-link:end -->
+   ```
 
-<!-- live-link:start -->
-<!-- live-link:end -->
-```
+   Everything between them is managed by the tool.
 
-Everything between the markers is managed by the tool. Keep the text, heading,
-and layout you want outside the markers.
+2. Copy [examples/consumer-workflow.yml](examples/consumer-workflow.yml) to
+   `.github/workflows/update-readme-live-link.yml` and replace `YOUR_ORG`:
 
-### 2. Add the workflow
+   ```yaml
+   name: Update README Live Link
 
-Copy [examples/consumer-workflow.yml](examples/consumer-workflow.yml) into
-your repo at `.github/workflows/update-readme-live-link.yml`:
+   on:
+     workflow_dispatch: # "Run workflow" button, any branch
+     repository_dispatch: # optional external trigger
 
-```yaml
-name: Update README Live Link
+   permissions:
+     contents: write
 
-on:
-  push:
-    branches: [main]
-  workflow_dispatch: # manual "Run workflow" button
+   jobs:
+     sync:
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v4
+         - uses: YOUR_ORG/tool-readme-links@v1
+         - uses: stefanzweifel/git-auto-commit-action@v5
+           with:
+             commit_message: "docs: sync live link from repository About section"
+   ```
 
-permissions:
-  contents: write
-
-jobs:
-  sync:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: YOUR_ORG/tool-readme-links@v1
-      - uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "docs: sync live link from repository About section"
-```
-
-GitHub has no workflow event for About-section edits, so the workflow runs
-on push and on manual dispatch: after changing the About URL, press "Run
-workflow" to re-sync the README. Nothing is committed when the rendered
-link is already correct.
-
-If this repo lives outside your org, you can also vendor the script and call
-it directly; see "Standalone usage" below.
+3. Set the URL in the repo's About section, then press "Run workflow".
+   Commits only when the rendered link actually changed.
 
 ## Inputs
 
@@ -97,28 +78,20 @@ it directly; see "Standalone usage" below.
 
 ## Standalone usage
 
-The script is plain bash (`awk`, plus `gh` or `curl`+`jq` for the API):
-
 ```bash
 GH_TOKEN=$(gh auth token) REPOSITORY=owner/repo ./scripts/update-live-link.sh
 ```
 
-Environment variables mirror the action inputs: `README_FILE`, `MARKER`,
-`LINK_TEXT`, `PLACEHOLDER_URL`, `REPOSITORY`, plus `LIVE_LINK_URL` to inject a
-URL directly without calling the API (useful for tests and previews).
+Env vars mirror the inputs: `README_FILE`, `MARKER`, `LINK_TEXT`,
+`PLACEHOLDER_URL`, `REPOSITORY`. Set `LIVE_LINK_URL` to skip the API.
 
-## Behavior notes
+## Notes
 
-- Multiple `start`/`end` blocks with the same marker name are all updated.
-- Markers inside fenced code blocks (``` or ~~~) are ignored, so marker
-  examples in documentation are never rewritten.
-- Markers may appear anywhere on their lines (extra indentation or trailing
-  text is fine).
-- If the API call fails or the repo has no homepage, the placeholder URL is
-  used and a warning is printed to stderr. The run does not fail, so a missing
-  About URL never breaks CI; check the `using_placeholder` output if you want
-  to react to it.
-- Missing markers or an end marker before the start marker are hard errors.
+- Multiple marker blocks are all updated; markers inside code fences are
+  left alone.
+- Missing markers or reversed marker order are hard errors. API failure or
+  no homepage: placeholder is written, warning on stderr, run still
+  succeeds — check `using_placeholder` to react.
 
 ## Tests
 

@@ -41,16 +41,16 @@ EOF
 
 readme="$TMP/case1.md"
 new_readme "$readme"
-LIVE_LINK_URL="https://demo.example.com" README_FILE="$readme" \
+LIVE_LINK_URL="https://app.example.com" README_FILE="$readme" \
   bash "$SCRIPT" >/dev/null
 check "injects live URL" \
-  "[View the Live Site](https://demo.example.com)" \
+  "[View the Live Site](https://app.example.com)" \
   "$(sed -n '6p' "$readme")"
 
 # --- 2. Idempotent ----------------------------------------------------------
 
 before="$(cat "$readme")"
-LIVE_LINK_URL="https://demo.example.com" README_FILE="$readme" \
+LIVE_LINK_URL="https://app.example.com" README_FILE="$readme" \
   bash "$SCRIPT" >/dev/null
 check "second run makes no change" "$before" "$(cat "$readme")"
 
@@ -82,7 +82,7 @@ check "missing markers exits non-zero" "1" "$(($? > 0))"
 
 readme="$TMP/case6.md"
 cat > "$readme" <<'EOF'
-# Demo
+# App
 <!-- website:start -->
 old stuff
 <!-- website:end -->
