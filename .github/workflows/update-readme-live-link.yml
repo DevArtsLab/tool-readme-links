@@ -1,0 +1,26 @@
+name: Update README Live Link
+
+on:
+  # GitHub has no workflow trigger for edits to the repository About
+  # section, so this runs on push and on manual dispatch. After changing
+  # the About URL, press "Run workflow" to re-sync the README.
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: live-link
+        uses: ./
+
+      - name: Commit updated README
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: sync live link from repository About section"

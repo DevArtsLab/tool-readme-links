@@ -1,0 +1,46 @@
+# Copy this file to .github/workflows/update-readme-live-link.yml in the
+# repository whose README should show the live link, then:
+#
+#   1. Put markers in your README where the link should render:
+#
+#        <!-- live-link:start -->
+#        <!-- live-link:end -->
+#
+#   2. Set the website URL in the repository's About section.
+#
+#   3. Replace YOUR_ORG below with the owner of the tool-readme-links repo
+#      (or vendor scripts/update-live-link.sh into your own repo and call it
+#      directly instead of the `uses:` step).
+
+name: Update README Live Link
+
+on:
+  # GitHub has no workflow trigger for edits to the repository About
+  # section, so this runs on push and on manual dispatch. After changing
+  # the About URL, press "Run workflow" to re-sync the README.
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: YOUR_ORG/tool-readme-links@v1
+        # Optional inputs:
+        # with:
+        #   readme: README.md
+        #   marker: live-link
+        #   link-text: View the Live Site
+        #   placeholder-url: https://example.com/your-live-url
+        #   repository: ${{ github.repository }}
+        #   token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: sync live link from repository About section"

@@ -1,0 +1,61 @@
+name: README Live Link
+description: >-
+  Writes the repository's "About" section URL (homepage) into a marked block
+  of a README file. Falls back to a placeholder URL when no homepage is set,
+  keeping the rendered README UI identical.
+branding:
+  icon: link
+  color: blue
+
+inputs:
+  readme:
+    description: Path to the README file to update
+    required: false
+    default: README.md
+  marker:
+    description: >-
+      Marker name. The block is delimited by "<!-- NAME:start -->" and
+      "<!-- NAME:end -->".
+    required: false
+    default: live-link
+  link-text:
+    description: Visible text of the rendered link
+    required: false
+    default: View the Live Site
+  placeholder-url:
+    description: URL written when the repository has no homepage set
+    required: false
+    default: https://example.com/your-live-url
+  repository:
+    description: owner/name of the repository to read the homepage from
+    required: false
+    default: ${{ github.repository }}
+  token:
+    description: Token used to call the GitHub API
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  url:
+    description: URL written into the README (real or placeholder)
+    value: ${{ steps.sync.outputs.url }}
+  changed:
+    description: '"true" if the README file was modified'
+    value: ${{ steps.sync.outputs.changed }}
+  using_placeholder:
+    description: '"1" if the placeholder URL was used instead of a real homepage'
+    value: ${{ steps.sync.outputs.using_placeholder }}
+
+runs:
+  using: composite
+  steps:
+    - id: sync
+      shell: bash
+      env:
+        README_FILE: ${{ inputs.readme }}
+        MARKER: ${{ inputs.marker }}
+        LINK_TEXT: ${{ inputs.link-text }}
+        PLACEHOLDER_URL: ${{ inputs.placeholder-url }}
+        REPOSITORY: ${{ inputs.repository }}
+        GH_TOKEN: ${{ inputs.token }}
+      run: "${{ github.action_path }}/scripts/update-live-link.sh"
