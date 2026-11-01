@@ -1,8 +1,7 @@
 name: README Live Link
 description: >-
-  Writes the repository's "About" section URL (homepage) into a marked block
-  of a README file. Falls back to a placeholder URL when no homepage is set,
-  keeping the rendered README UI identical.
+  Syncs a marked README block with the repository About URL; placeholder
+  when none is set.
 branding:
   icon: link
   color: blue

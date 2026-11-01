@@ -119,6 +119,20 @@ Env vars mirror the inputs: `README_FILE`, `MARKER`, `LINK_TEXT`,
 bash test/test-update-live-link.sh
 ```
 
+## Data handling
+
+Collects nothing. Reads the repository `homepage` field via the GitHub API
+inside the Actions runner, writes the link to the README, exits. No data
+leaves GitHub infrastructure.
+
+## Support
+
+[Open an issue](https://github.com/DevArtsLab/tool-readme-links/issues).
+
 ## License
 
-MIT © [DevArts Lab](https://github.com/DevArtsLab)
+MIT. See [LICENSE](LICENSE).
+
+## Credits
+
+Built by [DevArts Lab](https://github.com/DevArtsLab).
