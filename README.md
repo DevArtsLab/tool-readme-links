@@ -118,3 +118,7 @@ Env vars mirror the inputs: `README_FILE`, `MARKER`, `LINK_TEXT`,
 ```bash
 bash test/test-update-live-link.sh
 ```
+
+## License
+
+MIT © [DevArts Lab](https://github.com/DevArtsLab)
